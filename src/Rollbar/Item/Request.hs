@@ -104,7 +104,7 @@ instance ToJSON Get where
 #if MIN_VERSION_aeson(2,2,0)
 queryKVs :: forall e kv. (KeyValue e kv) => Query -> [Maybe kv]
 #else
-queryKVs :: forall kv. (KeyValue e kv) => Query -> [Maybe kv]
+queryKVs :: forall kv. (KeyValue kv) => Query -> [Maybe kv]
 #endif
 queryKVs = fmap go
     where
