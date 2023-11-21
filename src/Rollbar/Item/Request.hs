@@ -101,7 +101,7 @@ instance ToJSON Get where
     toJSON (Get q) = object . catMaybes . queryKVs $ q
     toEncoding (Get q) = pairs . mconcat . catMaybes . queryKVs $ q
 
-#if MIN_VERSION_aeson(2,1,0)
+#if MIN_VERSION_aeson(2,2,0)
 queryKVs :: forall e kv. (KeyValue e kv) => Query -> [Maybe kv]
 #else
 queryKVs :: forall kv. (KeyValue kv) => Query -> [Maybe kv]
