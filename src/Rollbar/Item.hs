@@ -198,7 +198,7 @@ data Item a headers
         }
     deriving (Eq, Generic, Show)
 
-#if MIN_VERSION_aeson(2,1,0)
+#if MIN_VERSION_aeson(2,2,0)
 itemKVs
     :: (KeyValue e kv, RemoveHeaders headers, ToJSON v)
     => Item v headers

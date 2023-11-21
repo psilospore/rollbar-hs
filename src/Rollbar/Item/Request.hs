@@ -162,7 +162,7 @@ instance ToJSON IP where
     toJSON (IP ip) = toJSON (show ip)
     toEncoding (IP ip) = toEncoding (show ip)
 
-#if MIN_VERSION_aeson(2,1,0)
+#if MIN_VERSION_aeson(2,2,0)
 requestKVs :: (KeyValue e kv, RemoveHeaders headers) => Request headers -> [kv]
 #else
 requestKVs :: (KeyValue kv, RemoveHeaders headers) => Request headers -> [kv]
