@@ -22,7 +22,8 @@ $(CONFIGURE): $(CABAL_FILE)
 	$(CABAL) $(CABAL_FLAGS) configure --enable-tests
 
 .PHONY: build
-build $(DOC_TEST): $(CONFIGURE) default.nix
+build $(DOC_TEST):
+	hpack && \
 	$(CABAL) $(CABAL_FLAGS) build $(CABAL_BUILD_FLAGS)
 
 .PHONY: check

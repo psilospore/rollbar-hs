@@ -3,6 +3,7 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE CPP #-}
 
 {-|
     Module      : Rollbar.Item.Request
@@ -56,6 +57,8 @@ import qualified Data.ByteString    as BS
 import qualified Data.Text          as T
 import qualified Data.Text.Encoding as TE
 
+import qualified Data.Aeson.Key as Key
+
 -- | Data sent to the server
 data Request headers
     = Request
@@ -96,14 +99,18 @@ instance ToJSON Get where
     toJSON (Get q) = object . catMaybes . queryKVs $ q
     toEncoding (Get q) = pairs . mconcat . catMaybes . queryKVs $ q
 
-queryKVs :: forall kv. (KeyValue kv) => Query -> [Maybe kv]
+#if MIN_VERSION_aeson(2,2,0)
+queryKVs :: forall e kv. (KeyValue e kv) => Query -> [Maybe kv]
+#else
+queryKVs :: forall kv. (KeyValue e kv) => Query -> [Maybe kv]
+#endif
 queryKVs = fmap go
     where
     go :: (BS.ByteString, Maybe BS.ByteString) -> Maybe kv
     go (key', val') = do
         key <- myDecodeUtf8 key'
         let val = val' >>= myDecodeUtf8
-        pure (key .= val)
+        pure (Key.fromText key .= val)
 
 -- | The HTTP Verb
 newtype Method
@@ -149,7 +156,11 @@ instance ToJSON IP where
     toJSON (IP ip) = toJSON (show ip)
     toEncoding (IP ip) = toEncoding (show ip)
 
+#if MIN_VERSION_aeson(2,2,0)
+requestKVs :: (KeyValue e kv, RemoveHeaders headers) => Request headers -> [kv]
+#else
 requestKVs :: (KeyValue kv, RemoveHeaders headers) => Request headers -> [kv]
+#endif
 requestKVs Request{get, headers, method, queryString, rawBody, url, userIP} =
     [ "body" .= rawBody
     , "GET" .= get

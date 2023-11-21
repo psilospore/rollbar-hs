@@ -12,7 +12,9 @@ import           Rollbar.QuickCheck  ()
 
 import           Test.QuickCheck     (conjoin, quickCheck)
 
-import qualified Data.HashMap.Strict
+import qualified Data.Aeson.KeyMap as KM
+import qualified Data.Aeson.Key as Key
+import Data.Bifunctor (Bifunctor(first))
 
 props :: IO ()
 props =
@@ -38,7 +40,7 @@ requiredBodyKeys = ["trace", "trace_chain", "message", "crash_report"]
 
 key :: Text -> Value -> [(Text, Value)]
 key k = \case
-  Object o -> case Data.HashMap.Strict.lookupDefault Null k o of
-    Object o -> Data.HashMap.Strict.toList o
+  Object o -> case KM.lookup (Key.fromText k) o of
+    Just (Object o) -> first Key.toText <$> KM.toList o
     _        -> mempty
   _ -> mempty

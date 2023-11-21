@@ -3,6 +3,7 @@
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE CPP #-}
 
 {-|
     Module      : Rollbar.Item.MissingHeaders
@@ -34,6 +35,8 @@ import qualified Data.ByteString.Char8 as BSC8
 import qualified Data.Text             as T
 import qualified Data.Text.Encoding    as TE
 
+import Data.Aeson.Key as Key
+
 -- | The request headers with some missing
 --
 --  This is useful for removing sensitive information
@@ -63,14 +66,18 @@ instance FromJSON (MissingHeaders headers) where
 instance RemoveHeaders headers => ToJSON (MissingHeaders headers) where
     toJSON = object . catMaybes . requestHeadersKVs . removeHeaders
 
-requestHeadersKVs :: forall kv. KeyValue kv => RequestHeaders -> [Maybe kv]
+#if MIN_VERSION_aeson(2,2,0)
+requestHeadersKVs :: forall e kv. KeyValue e kv => RequestHeaders -> [Maybe kv]
+#else
+requestHeadersKVs :: forall e kv. KeyValue e kv => RequestHeaders -> [Maybe kv]
+#endif
 requestHeadersKVs = fmap go
     where
     go :: Header -> Maybe kv
     go (key', val') = do
         key <- myDecodeUtf8 $ original key'
         val <- myDecodeUtf8 val'
-        pure (key .= val)
+        pure (Key.fromText key .= val)
 
 myDecodeUtf8 :: BS.ByteString -> Maybe T.Text
 myDecodeUtf8 = either (const Nothing) Just . TE.decodeUtf8'

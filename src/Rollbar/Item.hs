@@ -3,6 +3,7 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE CPP #-}
 
 {-|
     Module      : Rollbar.Item
@@ -197,10 +198,17 @@ data Item a headers
         }
     deriving (Eq, Generic, Show)
 
+#if MIN_VERSION_aeson(2,2,0)
+itemKVs
+    :: (KeyValue e kv, RemoveHeaders headers, ToJSON v)
+    => Item v headers
+    -> [kv]
+#else
 itemKVs
     :: (KeyValue kv, RemoveHeaders headers, ToJSON v)
     => Item v headers
     -> [kv]
+#endif
 itemKVs Item{accessToken, itemData} =
     [ "access_token" .= accessToken
     , "data" .= itemData
