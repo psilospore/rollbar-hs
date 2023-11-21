@@ -53,7 +53,7 @@ data Body arbitrary
         }
     deriving (Eq, Generic, Show)
 
-#if MIN_VERSION_aeson(2,2,0)
+#if MIN_VERSION_aeson(2,1,0)
 bodyKVs :: (KeyValue e kv, ToJSON v) => Body v -> [kv]
 #else
 bodyKVs :: (KeyValue kv, ToJSON v) => Body v -> [kv]

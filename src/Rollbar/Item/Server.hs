@@ -58,7 +58,7 @@ data Server
         }
     deriving (Eq, Generic, Show)
 
-#if MIN_VERSION_aeson(2,2,0)
+#if MIN_VERSION_aeson(2,1,0)
 serverKVs :: KeyValue e kv => Server -> [Maybe kv]
 #else
 serverKVs :: KeyValue kv => Server -> [Maybe kv]
