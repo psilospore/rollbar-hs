@@ -57,7 +57,9 @@ import qualified Data.ByteString    as BS
 import qualified Data.Text          as T
 import qualified Data.Text.Encoding as TE
 
+#if MIN_VERSION_aeson(2,2,0)
 import qualified Data.Aeson.Key as Key
+#endif
 
 -- | Data sent to the server
 data Request headers
@@ -110,7 +112,11 @@ queryKVs = fmap go
     go (key', val') = do
         key <- myDecodeUtf8 key'
         let val = val' >>= myDecodeUtf8
+        #if MIN_VERSION_aeson(2,2,0)
         pure (Key.fromText key .= val)
+        #else
+        pure (key .= val)
+        #endif
 
 -- | The HTTP Verb
 newtype Method

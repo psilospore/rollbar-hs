@@ -35,7 +35,9 @@ import qualified Data.ByteString.Char8 as BSC8
 import qualified Data.Text             as T
 import qualified Data.Text.Encoding    as TE
 
-import Data.Aeson.Key as Key
+#if MIN_VERSION_aeson(2,2,0)
+import qualified Data.Aeson.Key as Key
+#endif
 
 -- | The request headers with some missing
 --
@@ -77,7 +79,11 @@ requestHeadersKVs = fmap go
     go (key', val') = do
         key <- myDecodeUtf8 $ original key'
         val <- myDecodeUtf8 val'
+        #if MIN_VERSION_aeson(2,2,0)
         pure (Key.fromText key .= val)
+        #else
+        pure (key .= val)
+        #endif
 
 myDecodeUtf8 :: BS.ByteString -> Maybe T.Text
 myDecodeUtf8 = either (const Nothing) Just . TE.decodeUtf8'
