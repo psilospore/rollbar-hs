@@ -79,11 +79,11 @@ requestHeadersKVs = fmap go
     go (key', val') = do
         key <- myDecodeUtf8 $ original key'
         val <- myDecodeUtf8 val'
-        #if MIN_VERSION_aeson(2,1,0)
+#if MIN_VERSION_aeson(2,1,0)
         pure (Key.fromText key .= val)
-        #else
+#else
         pure (key .= val)
-        #endif
+#endif
 
 myDecodeUtf8 :: BS.ByteString -> Maybe T.Text
 myDecodeUtf8 = either (const Nothing) Just . TE.decodeUtf8'
