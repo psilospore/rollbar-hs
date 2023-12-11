@@ -32,15 +32,15 @@ tests:
   doc-test:
     dependencies:
       - QuickCheck >= 2.9
-      - aeson >= 2.0
-      - base >= 4.9
-      - bytestring >= 0.10
-      - case-insensitive >= 1.2
+      - aeson
+      - base
+      - bytestring
+      - case-insensitive
       - hspec >= 2.4
       - hspec-golden-aeson >= 0.2
       - rollbar-hs
-      - text >= 1.2
-      - unordered-containers >= 0.2
+      - text
+      - unordered-containers
     main: Main.hs
     source-dirs: test
 version: '0.4.1.0'
