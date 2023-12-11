@@ -112,11 +112,11 @@ queryKVs = fmap go
     go (key', val') = do
         key <- myDecodeUtf8 key'
         let val = val' >>= myDecodeUtf8
-        #if MIN_VERSION_aeson(2,1,0)
+#if MIN_VERSION_aeson(2,1,0)
         pure (Key.fromText key .= val)
-        #else
+#else
         pure (key .= val)
-        #endif
+#endif
 
 -- | The HTTP Verb
 newtype Method
