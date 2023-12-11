@@ -68,10 +68,11 @@ instance FromJSON (MissingHeaders headers) where
 instance RemoveHeaders headers => ToJSON (MissingHeaders headers) where
     toJSON = object . catMaybes . requestHeadersKVs . removeHeaders
 
+#if MIN_VERSION_aeson(2,1,0)
 #if MIN_VERSION_aeson(2,2,0)
 requestHeadersKVs :: forall e kv. KeyValue e kv => RequestHeaders -> [Maybe kv]
 #else
-requestHeadersKVs :: forall e kv. KeyValue kv => RequestHeaders -> [Maybe kv]
+requestHeadersKVs :: forall kv. KeyValue kv => RequestHeaders -> [Maybe kv]
 #endif
 requestHeadersKVs = fmap go
     where
@@ -79,9 +80,15 @@ requestHeadersKVs = fmap go
     go (key', val') = do
         key <- myDecodeUtf8 $ original key'
         val <- myDecodeUtf8 val'
-#if MIN_VERSION_aeson(2,1,0)
         pure (Key.fromText key .= val)
 #else
+requestHeadersKVs :: forall e kv. KeyValue kv => RequestHeaders -> [Maybe kv]
+requestHeadersKVs = fmap go
+    where
+    go :: Header -> Maybe kv
+    go (key', val') = do
+        key <- myDecodeUtf8 $ original key'
+        val <- myDecodeUtf8 val'
         pure (key .= val)
 #endif
 
